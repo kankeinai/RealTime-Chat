@@ -1,0 +1,37 @@
+.message{
+    position: relative;
+    padding: 10px 5px 10px 5px;  
+    margin-top: 10px; 
+    margin-bottom: 10px;
+    background-color: rgb(205, 208, 231);
+    border: 1px solid rgb(121, 123, 139);
+    border-radius: 7px;
+    width: 40%;
+}
+.personal{
+    left: 60%;
+    background-color: rgb(205, 221, 231);
+    border: 1px solid rgb(163, 181, 192);
+}
+.message-block{
+    padding: 10px 10px 10px 10px;
+    margin-top: auto;
+    overflow: scroll;
+    border: 1px solid rgb(211, 208, 208);
+    height: 80%;
+    
+}
+
+
+.chat-input{
+    margin-top: 15px;
+    width: 80%;
+}
+.chat-send{
+    margin-top: 15px;
+    width: 15%;
+}
+.chat-control{
+    display: flex;
+    justify-content: space-between;
+}

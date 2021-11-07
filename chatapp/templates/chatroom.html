@@ -1,4 +1,4 @@
-
+{%load static%}
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -8,45 +8,60 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="{%static '/css/style.css'%}">
     <title>Hello, world!</title>
 </head>
 
 <body>
     <div class="container">
-        <div class="row d-flex justify-content-center">
-            <div class="col-6">
-                <form>
-                    <div class="form-group">
-                        <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom – {{room_name}}</label>
-                        <div id="chat-text" rows="10" style="border:1px solid #000" readonly>
-                            {%for item in messages%}
-                                <p>{{item.author}}: {{item.message}}</p>
-                            {%endfor%}
-                        </div><br>
+        <form onkeypress="if(event.keyCode == 13) return false;">
+                <h1 class="room-title">Chatroom – {{room_name}}</h1>
+                    <div id="chat-text" class="message-block">
+                    
+                        {%for item in messages%}
+                            {% if item.author == user%}
+                                <div class="message personal">
+                            {%else%}
+                                <div class="message">
+                            {%endif%}
+                                    <div>{{item.author}}</div> 
+                                    <div>{{item.message}}</div>
+                                </div>
+                        {%empty%}
+                                <p style="text-align: center;">Be the first one! :)</p>
+                        {%endfor%}
+                        
+                    
                     </div>
-                    <div class="form-group">
-                        <input class="form-control" id="input" type="text"></br>
+                    <div class="chat-control">
+                        <input  id="input" onkeydown="if(event.keyCode == 13) return send(this);" type="text" class="chat-input">
+                        <input id="submit" type="button" class="chat-send" value="Send" onclick=send(this)>
                     </div>
-                    <input class="btn btn-secondary btn-lg btn-block" id="submit" type="button" value="Send">
                 </form>
-            </div>
-        </div>
     </div>
     {{request.user.username|json_script:"user_username" }}
     {{room_name|json_script:"room-name"}}
     <script>
-        const user_username = JSON.parse(document.getElementById('user_username').textContent);
-        document.querySelector('#submit').onclick = function (e) {
+        var element =  document.querySelector('#chat-text');
+        element.scrollTop = element.scrollHeight - element.clientHeight;
+        
+        var user_username = JSON.parse(document.getElementById('user_username').textContent);
+        if (user_username.length==0){
+            user_username = "Anonim"
+        }
+        
+        function send(e){
             const messageInputDom = document.querySelector('#input');
             const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
+
+            if(message){
+                chatSocket.send(JSON.stringify({
                 'message': message,
                 'username': user_username,
-            }));
-            messageInputDom.value = '';
+                }));
+                messageInputDom.value = '';
+            }
         };
-
 
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
@@ -60,13 +75,32 @@
 
         chatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
-            console.log(data)
-            var newP = document.createElement("p"); 
-	        var textNode = document.createTextNode(data.username + ': ' + data.message + '\n'); 
-            newP.appendChild(textNode);
+            const time = new Date().toLocaleTimeString(); 
+            
+            var user_username = JSON.parse(document.getElementById('user_username').textContent);
+            
 
-            document.querySelector('#chat-text').appendChild(newP); 
+            console.log(data)
+            var block = document.createElement("div")
+            var newP = document.createElement("div")
+            newP.innerHTML=data.username;
+            var newP2 = document.createElement("div");  
+            newP2.innerHTML=data.message;
+            block.appendChild(newP)
+            block.appendChild(newP2)
+            
+            if (user_username==data.username){
+                block.className = "message personal";
+            }else{
+                block.className = "message";
+            }
+
+            var element =  document.querySelector('#chat-text');
+            element.appendChild(block); 
+            
+            element.scrollTop = element.scrollHeight - element.clientHeight;
         }
+
 
     </script>
 

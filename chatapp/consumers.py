@@ -13,8 +13,12 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     
     @database_sync_to_async
     def save_message(self, message, username):
-        user = User.objects.get(username=username)
-        Message.objects.create(chatroom = self.q, author = user, message = message).save()
+        try:
+            user = User.objects.get(username=username)
+            Message.objects.create(chatroom = self.q, author = user, message = message).save()
+        except:
+            print("You are not loggined your messages are not saved")
+        
         
 
     async def connect(self):
@@ -42,6 +46,10 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         message = text_data_json['message']
         username = text_data_json['username']
         
+        if len(username)==0:
+            username="Anonim"
+            
+        
         await self.save_message(message, username)
 
         
@@ -57,7 +65,6 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def chatroom_message(self, event):
         message = event['message']
         username = event['username']
-        
 
         await self.send(text_data=json.dumps({
             'message': message,
