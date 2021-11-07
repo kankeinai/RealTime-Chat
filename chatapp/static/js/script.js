@@ -42,6 +42,7 @@ chatSocket.onmessage = function (e) {
             
     if (user_username==data.username){
         block.className = "message personal";
+        newP.innerHTML +=" (not saved)"
     }else{
         block.className = "message";
     }
