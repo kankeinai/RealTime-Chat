@@ -34,7 +34,12 @@ chatSocket.onmessage = function (e) {
     
     var block = document.createElement("div")
     var newP = document.createElement("div")
+
     newP.innerHTML=data.username;
+    if (data.username=="Anonim"){
+        newP.innerHTML+=" (not saved)"
+    }
+
     var newP2 = document.createElement("div");  
     newP2.innerHTML=data.message;
     block.appendChild(newP)
@@ -42,7 +47,6 @@ chatSocket.onmessage = function (e) {
             
     if (user_username==data.username){
         block.className = "message personal";
-        newP.innerHTML +=" (not saved)"
     }else{
         block.className = "message";
     }
